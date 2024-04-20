@@ -1,30 +1,38 @@
 import { StatusBar } from 'expo-status-bar';
 import {useEffect} from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import {StoreMap} from "./StoreMap";
+import {TSPSolver} from "./TSPSolver";
 import axios, {Axios} from "axios";
+import {GraphNode} from "./GraphNode";
+import {Graph} from "./Graph";
 
 export default function App() {
 
-  useEffect(() => {
-    testFunc();
-    console.log("hello in app");
-  }, []);
-  const testFunc = () => {
-    let config = {
-      method: 'get',
-      maxBodyLength: Infinity,
-      url: 'http://localhost:8080/test/testFunc',
-      headers: { }
-    };
+  useEffect(() =>{
+// Example graph nodes
+    const nodeA = new GraphNode("A");
+    const nodeB = new GraphNode("B");
+    const nodeC = new GraphNode("C");
+    const nodeD = new GraphNode("D");
 
-    axios.request(config)
-        .then((response) => {
-          console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-  }
+// Define neighbors and distances
+    nodeA.neighbors = [{ node: nodeB, distance: 1 }, { node: nodeC, distance: 4 }];
+    nodeB.neighbors = [{ node: nodeC, distance: 2 }, { node: nodeD, distance: 5 }];
+    nodeC.neighbors = [{ node: nodeD, distance: 1 }];
+
+// Create the graph
+    const graph = new Graph([nodeA, nodeB, nodeC, nodeD]);
+
+// Find shortest distances from nodeA using Dijkstra's algorithm
+    const distances = graph.dijkstra(nodeA);
+
+// Output the distances
+    for (const node in distances) {
+      console.log(`Distance from node A to ${node.name}: ${distances[node]}`);
+    }
+
+  });
 
   return (
     <View style={styles.container}>
